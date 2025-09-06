@@ -1,0 +1,11 @@
+{
+  "typescript.suggest.autoImports": false,
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "never",
+    "source.organizeImports": "never",
+    "source.addMissingImports": "never"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
