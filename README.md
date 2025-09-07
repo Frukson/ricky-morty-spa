@@ -8,6 +8,27 @@ This application was built to provide an easy and interactive way to browse thro
 - **Filter and Search**: Easily find characters by name or status (Alive, Dead, or Unknown).
 - **Character Details**: Click on any character to see more detailed information.
 
+---
+
+## ⚙️ Getting Started
+
+To run this project locally, follow these steps:
+
+1.  **Clone the repository** to your local machine.
+
+2.  **Install the dependencies**:
+    ```bash
+    npm install
+    ```
+
+3.  **Start the development server**:
+    ```bash
+    npm run dev
+    ```
+    The application will be available at `http://localhost:3000`.
+
+---
+
 ## 📝 Note for Reviewers
 Please be aware that a page size selector (e.g., "items per page") has been intentionally omitted from this project.
 
