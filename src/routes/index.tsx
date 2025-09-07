@@ -1,10 +1,14 @@
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
-import { CharacterStatusEnum, fetchCharacters } from '../api/characters'
-import { CharactersTable } from '../components/CharactersTable'
-import type { CharacterFilters, CharacterQueryKey } from '../api/characters'
+import { CharactersTable } from '@/components/CharactersTable'
 import { Box, Heading } from '@chakra-ui/react'
+import {
+  CharacterStatusEnum,
+  type CharacterFilters,
+  type CharacterQueryKey,
+} from '@/types/api/charactersType'
+import { fetchCharacters } from '@/api/characters'
 
 const charactersSearchSchema = z.object({
   page: z.number().catch(1),
@@ -27,7 +31,7 @@ function CharactersListPage() {
 
   const queryKey: CharacterQueryKey = ['characters', filters]
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, refetch, isError } = useQuery({
     queryKey,
     queryFn: fetchCharacters,
     placeholderData: keepPreviousData,
@@ -62,6 +66,7 @@ function CharactersListPage() {
         setFilters={setFilters}
         isLoading={isLoading}
         refetch={refetch}
+        isError={isError}
       />
     </Box>
   )

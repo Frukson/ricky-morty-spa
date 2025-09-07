@@ -12,7 +12,8 @@ import {
   Spinner,
   Button,
 } from '@chakra-ui/react'
-import { fetchCharacterById } from '../api/characters'
+import { fetchCharacterById } from '@/api/characters'
+import DetailRow from '@/components/DetailRow'
 
 const paramsSchema = z.object({
   characterId: z.string().transform((val) => {
@@ -96,8 +97,6 @@ function CharacterDetailsPage() {
             to="/"
             search={{
               page: 1,
-              name: '',
-              status: undefined,
             }}
             style={{
               color: '#00bcd4',
@@ -117,7 +116,6 @@ function CharacterDetailsPage() {
 
         <Box bg="gray.800" borderRadius="lg" overflow="hidden" w="full">
           <Flex direction={{ base: 'column', md: 'row' }} w="full">
-            {/* Character Image */}
             {data?.image && (
               <Box w={{ base: 'full', md: '33%' }}>
                 <Image
@@ -138,76 +136,37 @@ function CharacterDetailsPage() {
               )}
 
               <VStack gap={3} align="stretch">
-                {data?.status && (
-                  <Text fontSize="lg">
-                    <Text as="span" fontWeight="bold" color="cyan.300">
-                      Status:
-                    </Text>{' '}
-                    <Badge
-                      colorScheme={getStatusColor(data.status)}
-                      ml={2}
-                      px={2}
-                      py={1}
-                      borderRadius="md"
-                    >
-                      {data.status}
-                    </Badge>
-                  </Text>
-                )}
-
-                {data?.species && (
-                  <Text fontSize="lg">
-                    <Text as="span" fontWeight="bold" color="cyan.300">
-                      Species:
-                    </Text>{' '}
-                    {data.species}
-                  </Text>
-                )}
-
-                {data?.type && (
-                  <Text fontSize="lg">
-                    <Text as="span" fontWeight="bold" color="cyan.300">
-                      Type:
-                    </Text>{' '}
-                    {data.type}
-                  </Text>
-                )}
-
-                {data?.gender && (
-                  <Text fontSize="lg">
-                    <Text as="span" fontWeight="bold" color="cyan.300">
-                      Gender:
-                    </Text>{' '}
-                    {data.gender}
-                  </Text>
-                )}
-
-                {data?.origin?.name && (
-                  <Text fontSize="lg">
-                    <Text as="span" fontWeight="bold" color="cyan.300">
-                      Origin:
-                    </Text>{' '}
-                    {data.origin.name}
-                  </Text>
-                )}
-
-                {data?.location?.name && (
-                  <Text fontSize="lg">
-                    <Text as="span" fontWeight="bold" color="cyan.300">
-                      Last known location:
-                    </Text>{' '}
-                    {data.location.name}
-                  </Text>
-                )}
-
-                {data?.created && (
-                  <Text fontSize="lg">
-                    <Text as="span" fontWeight="bold" color="cyan.300">
-                      Created:
-                    </Text>{' '}
-                    {new Date(data.created).toLocaleDateString('pl-PL')}
-                  </Text>
-                )}
+                <DetailRow
+                  label={`Status`}
+                  value={
+                    data?.status && (
+                      <Badge
+                        bgColor={getStatusColor(data.status)}
+                        ml={2}
+                        px={2}
+                        py={1}
+                        borderRadius={`md`}
+                      >
+                        {data.status}
+                      </Badge>
+                    )
+                  }
+                />
+                <DetailRow label={`Species`} value={data?.species} />
+                <DetailRow label={`Type`} value={data?.type} />
+                <DetailRow label={`Gender`} value={data?.gender} />
+                <DetailRow label={`Origin`} value={data?.origin?.name} />
+                <DetailRow
+                  label={`Last known location`}
+                  value={data?.location?.name}
+                />
+                <DetailRow
+                  label={`Created`}
+                  value={
+                    data?.created &&
+                    new Date(data.created).toLocaleDateString(`pl-PL`)
+                  }
+                />
               </VStack>
             </Box>
           </Flex>

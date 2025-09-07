@@ -5,8 +5,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { Link } from '@tanstack/react-router'
-import { CharacterStatusEnum } from '../api/characters'
-import type { Character, CharacterFilters } from '../api/characters'
 import type { APIResponse } from '@/types/globalTypes'
 import {
   Box,
@@ -18,7 +16,14 @@ import {
   HStack,
   Select,
   createListCollection,
+  VStack,
 } from '@chakra-ui/react'
+import {
+  CharacterStatusEnum,
+  isValidStatus,
+  type Character,
+  type CharacterFilters,
+} from '@/types/api/charactersType'
 
 interface CharactersTableProps {
   data: APIResponse<Character> | undefined
@@ -26,9 +31,19 @@ interface CharactersTableProps {
   setFilters: (newFilters: Partial<CharacterFilters>) => void
   isLoading: boolean
   refetch: () => void
+  isError: boolean
 }
 
 const columnHelper = createColumnHelper<Character>()
+
+const statusSelectCollection = createListCollection({
+  items: [
+    { value: '', label: 'All' },
+    { value: CharacterStatusEnum.Alive, label: 'Alive' },
+    { value: CharacterStatusEnum.Dead, label: 'Dead' },
+    { value: CharacterStatusEnum.unknown, label: 'Unknown' },
+  ],
+})
 
 export function CharactersTable({
   data,
@@ -36,6 +51,7 @@ export function CharactersTable({
   setFilters,
   isLoading,
   refetch,
+  isError,
 }: CharactersTableProps) {
   const columns = [
     columnHelper.accessor('name', {
@@ -44,11 +60,6 @@ export function CharactersTable({
         <Link
           to="/characters/$characterId"
           params={{ characterId: info.row.original.id }}
-          search={{
-            page: filters.page,
-            name: filters.name,
-            status: filters.status,
-          }}
           className="font-bold text-cyan-400 hover:underline"
         >
           {info.getValue()}
@@ -78,15 +89,6 @@ export function CharactersTable({
     getCoreRowModel: getCoreRowModel(),
   })
 
-  const statusSelectCollection = createListCollection({
-    items: [
-      { value: '', label: 'All' },
-      { value: CharacterStatusEnum.Alive, label: 'Alive' },
-      { value: CharacterStatusEnum.Dead, label: 'Dead' },
-      { value: CharacterStatusEnum.unknown, label: 'Unknown' },
-    ],
-  })
-
   return (
     <Box>
       <Flex wrap="wrap" gap={4} mb={4} p={4} bg="gray.800" borderRadius="lg">
@@ -104,10 +106,9 @@ export function CharactersTable({
           value={[filters.status ?? '']}
           onValueChange={(details) =>
             setFilters({
-              status:
-                details.value[0] === ''
-                  ? undefined
-                  : (details.value[0] as CharacterFilters['status']),
+              status: isValidStatus(details.value[0])
+                ? details.value[0]
+                : undefined,
               page: 1,
             })
           }
@@ -184,19 +185,40 @@ export function CharactersTable({
         </Table.Header>
 
         <Table.Body>
-          {table.getRowModel().rows.map((row) => (
-            <Table.Row
-              key={row.id}
-              _hover={{ bg: 'gray.700' }}
-              transition="background-color 0.2s"
-            >
-              {row.getVisibleCells().map((cell) => (
-                <Table.Cell key={cell.id} borderColor="gray.700" p={4}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </Table.Cell>
-              ))}
+          {!isError && table.getRowModel().rows.length > 0 ? (
+            table.getRowModel().rows.map((row) => (
+              <Table.Row
+                key={row.id}
+                _hover={{ bg: 'gray.700' }}
+                transition="background-color 0.2s"
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <Table.Cell key={cell.id} borderColor="gray.700" p={4}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Table.Cell>
+                ))}
+              </Table.Row>
+            ))
+          ) : (
+            <Table.Row>
+              <Table.Cell
+                colSpan={table.getVisibleLeafColumns().length}
+                textAlign="center"
+                py={10}
+                borderColor="gray.700"
+              >
+                <VStack>
+                  <Text fontSize="lg" color="gray.400">
+                    {isError
+                      ? 'An error occurred while fetching data.'
+                      : isLoading
+                        ? 'Loading...'
+                        : 'No characters found.'}
+                  </Text>
+                </VStack>
+              </Table.Cell>
             </Table.Row>
-          ))}
+          )}
         </Table.Body>
       </Table.Root>
 
